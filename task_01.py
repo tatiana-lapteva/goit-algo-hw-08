@@ -7,58 +7,33 @@
 
 import heapq
 
-class MinHeap:
-    def __init__(self, arr):
-        self.heap = []
-        if type(arr) is list: 
-            self.heap = arr.copy() 
-            for i in range(len(self.heap))[::-1]:  
-                self._siftdown(i)  
+def min_cost_to_connect_cables(cables):
+    if len(cables) == 0:
+        return 0
 
-    def _siftdown(self, i):
-        left = 2*i + 1  
-        right = 2*i + 2 
-        while (left < len(self.heap) and self.heap[i] > self.heap[left]) or (right < len(self.heap) and self.heap[i] > self.heap[right]):
-            smallest = left if (right >= len(self.heap) or self.heap[left] < self.heap[right]) else right
-            self.heap[i], self.heap[smallest] = self.heap[smallest], self.heap[i]
-            i = smallest  
-            left = 2*i + 1  
-            right = 2*i + 2  
+    heapq.heapify(cables)
+    total_cost = 0
+    order = []
 
-    def extract_min(self):
-        if len(self.heap) == 0:  
-            return None 
-        minval = self.heap[0]  
-        self.heap[0], self.heap[-1] = self.heap[-1], self.heap[0]  
-        self.heap.pop() 
-        self._siftdown(0)  
-        return minval  
+    while len(cables) > 1:
+        first = heapq.heappop(cables)
+        second = heapq.heappop(cables)
+
+        cost = first + second
+        total_cost += cost
+
+        heapq.heappush(cables, cost)
+
+        order.append((first, second, cost))
+
+    return total_cost, order
 
 
-if __name__ == '__main__':
+cables = [1, 1, 2, 1, 2, 2]
+total_cost, order = min_cost_to_connect_cables(cables)
 
-    # Using heapq:
+print("Порядок об'єднання, який мінімізує загальні витрати:")
+for i, step in enumerate(order):
+    print(f"{step[0]} + {step[1]} = {step[2]}")
 
-    # pipes = [4, 10, 3, 5, 1]
-    # heapq.heapify(pipes)
-    # print("Купа: ", pipes)
-    # print("Порядок об'єднання, який мінімізує загальні витрати:")
-    # while pipes:
-    #     min_elem = heapq.heappop(pipes)
-    #     print(min_elem, end="->")
-        
-
-    # Using custom Class MinHead:
-
-    pipes = [4, 10, 3, 5, 1]
-    min_heap = MinHeap(pipes)
-    print("Купа: ", min_heap.heap)
-    print("Порядок об'єднання, який мінімізує загальні витрати:")
-    while min_heap.heap:
-        print(min_heap.extract_min(), end="->")
-    
-
-
-
-
-
+print(f"Мінімальні витрати на з'єднання кабелів: {total_cost}")
